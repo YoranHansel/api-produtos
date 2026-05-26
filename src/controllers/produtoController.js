@@ -1,56 +1,127 @@
-// importa o model produto do models/index.js
 const { produto } = require('../models');
 
 class produtoController {
 
-    // GET /produtos — lista todos os produtos
+  
     async index(req, res) {
-        const produtos = await produto.findAll(); // SELECT * FROM produtos
-        return res.status(200).json(produtos);
-    }
+        
+    try{
 
-    // POST /produtos — cadastra um novo produto
+        const produtos = await produto.findAll(); 
+        return res.status(200).json(produtos);
+    
+    }catch (error){
+        return res.status(500).json({
+            erro: "Erro ao listar produtos"
+        });
+    }
+}
     async store(req, res) {
-        // desestrutura os dados do corpo da requisição
+      
+    try{
         const { nome, preco, quantidade } = req.body;
 
-        // INSERT INTO produtos (nome, preco, quantidade) VALUES (...)
         const produtoCreated = await produto.create({
             nome,
             preco,
             quantidade
         });
 
-        return res.status(200).json(produtoCreated); // retorna o produto criado
+        if(!nome || preco == null || quantidade == null){
+        return res.status(404).json({
+            erro: "Nome, preço e quantidade são obrigatórios"
+        })
+       }
+
+       if(preco < 0){
+        
+         return res.status(400).json({
+            erro: "Preço não pode ser negativo"
+         });
+       }
+
+       if(quantidade < 0){
+
+        return res.status(400).json({
+            erro: "Quantidade não pode ser negativa"
+        });
+       }
+
+        return res.status(200).json(produtoCreated); 
+    
+    }catch (error) {
+        return res.status(500).json({
+            erro: "Erro ao cadastrar produto"
+        });
     }
+}
 
-    // PUT /produtos/:id — atualiza um produto pelo ID
     async update(req, res) {
-        const { id } = req.params;               // pega o id da URL
-        const { nome, preco, quantidade } = req.body; // pega os novos dados
+        
+    try{
+        
+        const { id } = req.params;              
+        const { nome, preco, quantidade } = req.body; 
 
-        // UPDATE produtos SET nome=?, preco=?, quantidade=? WHERE id=?
+       const produtoExiste = await produto.findByPk(id);
+
+       if(!produtoExiste){
+
+         return res.status(404).json({
+            erro: "Produto não encontrado"
+         })
+       }
+
+       if(!nome || preco == null || quantidade == null){
+        return res.status(404).json({
+            erro: "Nome, preço e quantidade são obrigatórios"
+        })
+       }
+
+       if(preco < 0){
+        
+         return res.status(400).json({
+            erro: "Preço não pode ser negativo"
+         });
+       }
+
+       if(quantidade < 0){
+
+        return res.status(400).json({
+            erro: "Quantidade não pode ser negativa"
+        });
+       }
+
         await produto.update(
-            { nome, preco, quantidade }, // o que atualizar
-            { where: { id: id } }        // qual registro
+            { nome, preco, quantidade }, 
+            { where: { id: id } }        
         );
 
         return res.status(200).json({ mensagem: "Produto atualizado com sucesso" });
+    
+    }catch (error) {
+        return res.status(500).json({
+            erro: "Erro ao atualizar produto"
+        });
     }
-
-    // DELETE /produtos/:id — remove um produto pelo ID
+}
     async destroy(req, res) {
-        const { id } = req.params; // pega o id da URL
+        
+    try{
+        
+        const { id } = req.params; 
 
-        // DELETE FROM produtos WHERE id=?
         await produto.destroy({
             where: { id: id }
         });
 
-        // json() aceita apenas um argumento — objeto com a mensagem
         return res.status(200).json({ mensagem: "Produto deletado com sucesso" });
+    
+    }catch (error){
+       return res.status(500).json({
+         erro: "Erro ao excluir produto"
+       })
     }
+  }
 }
-
-// exporta uma instância da classe para usar nas rotas
 module.exports = new produtoController();
