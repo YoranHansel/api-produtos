@@ -47,6 +47,30 @@ class produtoController {
         });
        }
 
+       if (isNaN(preco)) { 
+                return res.status(400).json({ 
+                    erro: "Preço deve ser um número" 
+                }); 
+            } 
+ 
+            if (isNaN(quantidade)) { 
+                return res.status(400).json({ 
+                    erro: "Quantidade deve ser um número" 
+                }); 
+            } 
+ 
+            if (Number(preco) < 0) { 
+                return res.status(400).json({ 
+                    erro: "Preço não pode ser negativo" 
+                }); 
+            } 
+ 
+            if (Number(quantidade) < 0) { 
+                return res.status(400).json({ 
+                    erro: "Quantidade não pode ser negativa" 
+                }); 
+            }
+
         return res.status(200).json(produtoCreated); 
     
     }catch (error) {
@@ -91,6 +115,30 @@ class produtoController {
             erro: "Quantidade não pode ser negativa"
         });
        }
+
+       if (isNaN(preco)) { 
+                return res.status(400).json({ 
+                    erro: "Preço deve ser um número" 
+                }); 
+            } 
+
+            if (isNaN(quantidade)) { 
+                return res.status(400).json({ 
+                    erro: "Quantidade deve ser um número" 
+                }); 
+            } 
+
+            if (Number(preco) < 0) { 
+                return res.status(400).json({ 
+                    erro: "Preço não pode ser negativo" 
+                }); 
+            } 
+ 
+            if (Number(quantidade) < 0) { 
+                return res.status(400).json({ 
+                    erro: "Quantidade não pode ser negativa" 
+                }); 
+            }
 
         await produto.update(
             { nome, preco, quantidade }, 
